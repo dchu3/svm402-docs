@@ -34,6 +34,7 @@ Solana token data is noisy. Most aggregators report inflated volume and holder c
 | POST   | `/analyze` | $0.05 USDC | Full token analysis: price, liquidity, safety, holders, wash trading detection |
 | GET    | `/analyze/{address}` | $0.05 USDC | Full analysis (GET variant) |
 | GET    | `/safety/{address}` | $0.02 USDC | Honeypot / safety risk check with 0–10 risk score |
+| GET    | `/wash-trading/{address}` | $0.02 USDC | Wash trading detection — bot volume manipulation indicators |
 | GET    | `/price/{address}` | $0.01 USDC | Token price, liquidity, market cap, 24h volume, price changes |
 | POST   | `/discover` | $0.02 USDC | Organic Solana token discovery — filtered to exclude wash trading |
 | GET    | `/wallet/analyze/{address}` | $0.02 USDC | Wallet holdings: total value, SOL balance, top 20 tokens, risk summary |
@@ -100,6 +101,10 @@ curl https://svm402.com/analyze/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
 curl https://svm402.com/safety/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
   -H "X-Payment: <tx_signature>"
 
+# Wash trading detection
+curl https://svm402.com/wash-trading/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
+  -H "X-Payment: <tx_signature>"
+
 # Price, liquidity, volume
 curl https://svm402.com/price/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
   -H "X-Payment: <tx_signature>"
@@ -142,12 +147,13 @@ Use svm402 from any MCP-compatible client (Claude, Cursor, custom agents):
 
 👉 **https://github.com/dchu3/svm402-mcp**
 
-Five tools exposed:
+Six tools exposed:
 
 - `analyze_token` — full token analysis
 - `wallet_analyze` — wallet holdings breakdown
 - `discover_tokens` — organic token discovery
 - `check_safety` — honeypot/risk check
+- `check_wash_trading` — wash trading detection
 - `get_price` — price & liquidity
 
 Payment is handled automatically under the hood via x402.
