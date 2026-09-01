@@ -4,7 +4,7 @@
 
 ![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet-9945FF?logo=solana&logoColor=white)
 ![x402 v2](https://img.shields.io/badge/x402-v2-blue)
-![PayAI Facilitator](https://img.shields.io/badge/Facilitator-PayAI-14F195)
+![Self-Hosted Facilitator](https://img.shields.io/badge/Facilitator-Self_Hosted-14F195)
 ![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green)
 
 - **Base URL:** https://svm402.com
@@ -12,7 +12,7 @@
 - **Payment:** x402 protocol — USDC SPL transfers
 - **Seller wallet:** `4ofUMGcRHsfr6LMY6AuaRSQpqyKsvibSbXmieQL4i8Dc`
 - **USDC mint:** `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
-- **Facilitator:** PayAI (https://facilitator.payai.network)
+- **Facilitator:** self-hosted [SVM402 Facilitator](https://facilitator.svm402.com) (facilitator.svm402.com) — with Coinbase CDP and PayAI as automatic failovers
 
 ---
 
@@ -76,7 +76,7 @@ svm402 uses the [x402 protocol](https://www.x402.org) for per-request USDC micro
    ```
    X-Payment: <transaction_signature>
    ```
-4. The server verifies the transaction on-chain (via the PayAI facilitator) and returns the data.
+4. The server verifies the transaction on-chain (via the [SVM402 Facilitator](https://facilitator.svm402.com) — our self-hosted facilitator, with Coinbase CDP and PayAI failover) and returns the data.
 
 No accounts. No API keys. The payment *is* the auth.
 
