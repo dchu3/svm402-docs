@@ -2,6 +2,8 @@
 
 **Pay per call in USDC. No API keys. No signup. AI agents discover, pay for, and consume token analysis data autonomously via the x402 protocol.**
 
+**What it tells you — and what it doesn't:** svm402 reads on-chain data to determine which tokens to **avoid** — honeypots, live mint or freeze authority, unlocked liquidity, wash-trading patterns, manufactured volume. It helps eliminate the cheats so the market is the only thing left to beat. It does not predict which way a token's price will move — that's impossible, for any tool.
+
 ![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet-9945FF?logo=solana&logoColor=white)
 ![x402 v2](https://img.shields.io/badge/x402-v2-blue)
 ![Own Facilitator Backup](https://img.shields.io/badge/Facilitator-Own_%2B_CDP_%2F_PayAI_Failover-14F195)
