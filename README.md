@@ -4,6 +4,8 @@
 
 **What it tells you — and what it doesn't:** svm402 reads on-chain data to determine which tokens to **avoid** — honeypots, live mint or freeze authority, unlocked liquidity, wash-trading patterns, manufactured volume. It helps eliminate the cheats so the market is the only thing left to beat. It does not predict which way a token's price will move — that's impossible, for any tool.
 
+**`/discover` inverts the filter** — the genuinely-traded tokens rise to the top by organic score. It surfaces demand authenticity, **not endorsements**: results are not recommendations to buy, and every discovered token still requires independent analysis (`/safety`, `/analyze`) before any decision.
+
 ![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet-9945FF?logo=solana&logoColor=white)
 ![x402 v2](https://img.shields.io/badge/x402-v2-blue)
 ![Own Facilitator Backup](https://img.shields.io/badge/Facilitator-Own_%2B_CDP_%2F_PayAI_Failover-14F195)
