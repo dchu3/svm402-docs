@@ -37,11 +37,11 @@ Solana token data is noisy. Most aggregators report inflated volume and holder c
 |--------|------|------|-------------|
 | POST   | `/analyze` | $0.05 USDC | Full token analysis: price, liquidity, safety, holders, wash trading detection |
 | GET    | `/analyze/{address}` | $0.05 USDC | Full analysis (GET variant) |
-| GET    | `/safety/{address}` | $0.02 USDC | Honeypot / safety risk check with 0–10 risk score |
-| GET    | `/wash-trading/{address}` | $0.02 USDC | Wash trading detection — bot volume manipulation indicators |
+| GET    | `/safety/{address}` | $0.01 USDC | Honeypot / safety risk check with 0–10 risk score |
+| GET    | `/wash-trading/{address}` | $0.01 USDC | Wash trading detection — bot volume manipulation indicators |
 | GET    | `/price/{address}` | $0.01 USDC | Token price, liquidity, market cap, 24h volume, price changes |
-| POST   | `/discover` | $0.02 USDC | Organic Solana token discovery — filtered to exclude wash trading |
-| GET    | `/wallet/analyze/{address}` | $0.02 USDC | Wallet holdings: total value, SOL balance, top 20 tokens, risk summary |
+| POST   | `/discover` | $0.01 USDC | Organic Solana token discovery — filtered to exclude wash trading |
+| GET    | `/wallet/analyze/{address}` | $0.01 USDC | Wallet holdings: total value, SOL balance, top 20 tokens, risk summary |
 | GET    | `/health` | Free | Service health check |
 
 ---
