@@ -149,7 +149,7 @@ svm402 is fully self-describing — point any crawler or agent at the root:
 
 Use svm402 from any MCP-compatible client (Claude, Cursor, custom agents):
 
-👉 **https://github.com/dchu3/svm402-mcp**
+👉 **Any x402 client works — e.g. AgentCash (`npx -y agentcash@latest`, then `agentcash discover https://svm402.com`)**
 
 Six tools exposed:
 
@@ -198,4 +198,4 @@ Crypto assets are volatile and risky. svm402 provides data and analysis for info
 - **Service:** https://svm402.com
 - **x402 protocol:** https://www.x402.org
 - **MCP:** https://modelcontextprotocol.io
-- **MCP server repo:** https://github.com/dchu3/svm402-mcp
+- **Client:** any generic x402 client (AgentCash recommended: https://agentcash.dev) — svm402.com serves its endpoints and prices via live x402/OpenAPI metadata
