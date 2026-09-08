@@ -26,7 +26,7 @@ Solana token data is noisy. Most aggregators report inflated volume and holder c
 
 - **Wash trading detection** — organic-token discovery and analysis filtered by on-chain organic scores and pool-vault behavior, not reported volume.
 - **On-chain data accuracy** — holder counts, mint/freeze authority, taxes, and honeypot checks come straight from RPC (Helius), not cached third-party snapshots.
-- **Built for agents** — x402-native payment, machine-readable discovery files, OpenAPI spec, and an MCP server. An agent can discover, pay for, and consume the API with zero human setup.
+- **Built for agents** — x402-native payment, machine-readable discovery files (OpenAPI, ARD catalog, llms.txt). Any generic x402 client can discover, pay for, and consume the API with zero human setup and zero vendor-specific install.
 - **Pay per call** — priced in USDC micropayments. No accounts, no keys, no rate-limit tiers.
 
 ---
@@ -35,14 +35,22 @@ Solana token data is noisy. Most aggregators report inflated volume and holder c
 
 | Method | Path | Cost | Description |
 |--------|------|------|-------------|
-| POST   | `/analyze` | $0.05 USDC | Full token analysis: price, liquidity, safety, holders, wash trading detection |
+| POST   | `/analyze` | $0.05 USDC | Full token analysis: price, liquidity, safety, organic score, holders, wash trading detection (the bundle — sum of parts costs more) |
 | GET    | `/analyze/{address}` | $0.05 USDC | Full analysis (GET variant) |
 | GET    | `/safety/{address}` | $0.01 USDC | Honeypot / safety risk check with 0–10 risk score |
 | GET    | `/wash-trading/{address}` | $0.01 USDC | Wash trading detection — bot volume manipulation indicators |
 | GET    | `/price/{address}` | $0.01 USDC | Token price, liquidity, market cap, 24h volume, price changes |
 | POST   | `/discover` | $0.01 USDC | Organic Solana token discovery — filtered to exclude wash trading |
 | GET    | `/wallet/analyze/{address}` | $0.01 USDC | Wallet holdings: total value, SOL balance, top 20 tokens, risk summary |
+| POST   | `/holdcheck` | $0.01 USDC | Held-position integrity: is a token you hold STILL clean? Five tripwires vs your entry baseline (mint/freeze reactivation, honeypot, LP collapse, risk spike) |
+| GET    | `/holdcheck/{address}` | $0.01 USDC | Held-position integrity (GET variant — baseline via `?liquidity_usd=`) |
+| GET    | `/organic/{address}` | $0.01 USDC | Demand authenticity: the organic score standalone — what % of activity is genuine vs manufactured |
+| GET    | `/wash-delta/{address}` | $0.01 USDC | Authenticity trend vs the server's own hourly snapshots — STABLE / DEGRADING / IMPROVING |
 | GET    | `/health` | Free | Service health check |
+
+**Every check is one cent. The full analysis is a nickel.** All paid endpoints accept `?format=llm` for a deterministic one-paragraph briefing alongside the structured data.
+
+**Bought clean isn't staying clean** — tokens can activate cheat mechanics after your purchase (mint authority re-granted, LP pulled). `/holdcheck` re-examines held positions against your entry baseline; `/wash-delta` watches whether authenticity is trending worse using tamper-proof server-side snapshots. Integrity finding only — never a sell recommendation, never price prediction.
 
 ---
 
@@ -123,6 +131,20 @@ curl -X POST https://svm402.com/discover \
 curl https://svm402.com/wallet/analyze/37fMqbe7vNoDuE15B1qas8TZyhqvYwgLVSViRa4DEmwa \
   -H "X-Payment: <tx_signature>"
 
+# Held-position integrity (is a token I hold still clean?)
+curl -X POST https://svm402.com/holdcheck \
+  -H "Content-Type: application/json" \
+  -H "X-Payment: <tx_signature>" \
+  -d '{"address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263", "baseline": {"liquidity_usd": 611119}}'
+
+# Organic score standalone (?format=llm adds a one-paragraph briefing)
+curl "https://svm402.com/organic/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263?format=llm" \
+  -H "X-Payment: <tx_signature>"
+
+# Wash-trend delta vs server snapshots
+curl https://svm402.com/wash-delta/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
+  -H "X-Payment: <tx_signature>"
+
 # Health check (free)
 curl https://svm402.com/health
 ```
@@ -145,19 +167,22 @@ svm402 is fully self-describing — point any crawler or agent at the root:
 
 ---
 
-## MCP Server
+## Agent Integration
 
-Use svm402 from any MCP-compatible client (Claude, Cursor, custom agents):
+**No per-vendor install needed.** svm402.com is x402-native — any generic x402 client discovers and pays it with zero setup:
 
-👉 **Any x402 client works — e.g. AgentCash (`npx -y agentcash@latest`, then `agentcash discover https://svm402.com`)**
+👉 **AgentCash (recommended): `npx -y agentcash@latest`, then `agentcash discover https://svm402.com`** — lists every endpoint and live price, then `agentcash fetch <url>` handles payment automatically.
 
-Six tools exposed:
+A purpose-built MCP server (9 tools) also exists for bot builders wanting compiled clients with spend guards (max per call, daily cap, payment audit log) — it's what the live sol-trader-agent harness runs. Tools:
 
-- `analyze_token` — full token analysis
-- `wallet_analyze` — wallet holdings breakdown
+- `analyze_token` — full token analysis (bundle)
+- `holdcheck_token` — held-position integrity check
+- `get_organic_score` — organic score standalone
+- `get_wash_delta` — authenticity trend vs server snapshots
 - `discover_tokens` — organic token discovery
 - `check_safety` — honeypot/risk check
 - `check_wash_trading` — wash trading detection
+- `wallet_analyze` — wallet holdings breakdown
 - `get_price` — price & liquidity
 
 Payment is handled automatically under the hood via x402.
