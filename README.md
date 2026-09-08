@@ -35,8 +35,8 @@ Solana token data is noisy. Most aggregators report inflated volume and holder c
 
 | Method | Path | Cost | Description |
 |--------|------|------|-------------|
-| POST   | `/analyze` | $0.05 USDC | Full token analysis: price, liquidity, safety, organic score, holders, wash trading detection (the bundle — sum of parts costs more) |
-| GET    | `/analyze/{address}` | $0.05 USDC | Full analysis (GET variant) |
+| POST   | `/analyze` | $0.03 USDC | Full token analysis: price, liquidity, safety, organic score, holders, wash trading detection (the bundle — cheaper than the sum of parts: 4 checks = $0.04) |
+| GET    | `/analyze/{address}` | $0.03 USDC | Full analysis (GET variant) |
 | GET    | `/safety/{address}` | $0.01 USDC | Honeypot / safety risk check with 0–10 risk score |
 | GET    | `/wash-trading/{address}` | $0.01 USDC | Wash trading detection — bot volume manipulation indicators |
 | GET    | `/price/{address}` | $0.01 USDC | Token price, liquidity, market cap, 24h volume, price changes |
@@ -48,7 +48,7 @@ Solana token data is noisy. Most aggregators report inflated volume and holder c
 | GET    | `/wash-delta/{address}` | $0.01 USDC | Authenticity trend vs the server's own hourly snapshots — STABLE / DEGRADING / IMPROVING |
 | GET    | `/health` | Free | Service health check |
 
-**Every check is one cent. The full analysis is a nickel.** All paid endpoints accept `?format=llm` for a deterministic one-paragraph briefing alongside the structured data.
+**Every check is one cent. The full analysis is three cents — cheaper than calling the parts separately.** All paid endpoints accept `?format=llm` for a deterministic one-paragraph briefing alongside the structured data.
 
 **Bought clean isn't staying clean** — tokens can activate cheat mechanics after your purchase (mint authority re-granted, LP pulled). `/holdcheck` re-examines held positions against your entry baseline; `/wash-delta` watches whether authenticity is trending worse using tamper-proof server-side snapshots. Integrity finding only — never a sell recommendation, never price prediction.
 
