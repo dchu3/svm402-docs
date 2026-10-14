@@ -35,20 +35,19 @@ Solana token data is noisy. Most aggregators report inflated volume and holder c
 
 | Method | Path | Cost | Description |
 |--------|------|------|-------------|
-| POST   | `/analyze` | $0.03 USDC | Full token analysis: price, liquidity, safety, organic score, holders, wash trading detection (the bundle — cheaper than the sum of parts: 4 checks = $0.04) |
-| GET    | `/analyze/{address}` | $0.03 USDC | Full analysis (GET variant) |
-| GET    | `/safety/{address}` | $0.01 USDC | Honeypot / safety risk check with 0–10 risk score |
-| GET    | `/wash-trading/{address}` | $0.01 USDC | Wash trading detection — bot volume manipulation indicators |
-| GET    | `/price/{address}` | $0.01 USDC | Token price, liquidity, market cap, 24h volume, price changes |
-| POST   | `/discover` | $0.01 USDC | Organic Solana token discovery — filtered to exclude wash trading |
-| GET    | `/wallet/analyze/{address}` | $0.01 USDC | Wallet holdings: total value, SOL balance, top 20 tokens, risk summary |
-| POST   | `/holdcheck` | $0.01 USDC | Held-position integrity: is a token you hold STILL clean? Five tripwires vs your entry baseline (mint/freeze reactivation, honeypot, LP collapse, risk spike) |
-| GET    | `/holdcheck/{address}` | $0.01 USDC | Held-position integrity (GET variant — baseline via `?liquidity_usd=`) |
-| GET    | `/organic/{address}` | $0.01 USDC | Demand authenticity: the organic score standalone — what % of activity is genuine vs manufactured |
-| GET    | `/wash-delta/{address}` | $0.01 USDC | Authenticity trend vs the server's own hourly snapshots — STABLE / DEGRADING / IMPROVING |
+| POST   | `/check` | $0.03 USDC | The one paid endpoint — full check: price, liquidity, safety, organic score, holders, wash-trading detection. One call, one verdict |
+| GET    | `/check?mint=<address>` | $0.03 USDC | GET twin — same check, identical verdict, same price |
+| GET    | `/demo/check` | Free | Free preview of `/check` — see the response shape before you pay |
 | GET    | `/health` | Free | Service health check |
+| GET    | `/.well-known/x402` | Free | x402 payment discovery metadata |
+| GET    | `/llms.txt` | Free | LLM-friendly reference with curl examples |
+| GET    | `/openapi.json` | Free | OpenAPI 3.x spec |
 
-**Every check is one cent. The full analysis is three cents — cheaper than calling the parts separately.** All paid endpoints accept `?format=llm` for a deterministic one-paragraph briefing alongside the structured data.
+Free, no payment header: `GET /demo/check` (preview), `GET /health`, and the metadata surfaces — `/.well-known/x402`, `/llms.txt`, `/openapi.json`.
+
+**`/check` is the one paid endpoint — $0.03 USDC flat, POST or GET twin alike.**
+
+**Retired (issues #217/#223):** every other route is gone — `/discover`, `/demo/discover`, `/wallet/analyze/{address}`, `/holdcheck`, `/holdcheck/{address}`, `/quote-gate`, `/batch/analyze`, `/analyze`, `/analyze/{address}`, `/safety/{address}`, `/wash-trading/{address}`, `/wash-delta/{address}`, `/organic/{address}`, `/price/{address}`. Each returns **410 `route_retired`** — no charge — with a pointer to `POST /check`, and none appear in any catalog (`.well-known/x402`, `endpoints.json`, `llms.txt`, `openapi.json`, MCP).
 
 **Bought clean isn't staying clean** — tokens can activate cheat mechanics after your purchase (mint authority re-granted, LP pulled). `/holdcheck` re-examines held positions against your entry baseline; `/wash-delta` watches whether authenticity is trending worse using tamper-proof server-side snapshots. Integrity finding only — never a sell recommendation, never price prediction.
 
