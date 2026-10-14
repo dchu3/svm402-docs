@@ -4,7 +4,7 @@
 
 **What it tells you — and what it doesn't:** svm402 reads on-chain data to determine which tokens to **avoid** — honeypots, live mint or freeze authority, unlocked liquidity, wash-trading patterns, manufactured volume. It helps eliminate the cheats so the market is the only thing left to beat. It does not predict which way a token's price will move — that's impossible, for any tool.
 
-**`/discover` inverts the filter** — the genuinely-traded tokens rise to the top by organic score. It surfaces demand authenticity, **not endorsements**: results are not recommendations to buy, and every discovered token still requires independent analysis (`/safety`, `/analyze`) before any decision.
+**Demand authenticity, not endorsements** — `POST /check` (free preview: `GET /demo/check`) surfaces how much of a token's activity is genuine versus manufactured. A passing verdict is **not** a recommendation to buy, and no single score replaces independent analysis before any decision.
 
 ![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet-9945FF?logo=solana&logoColor=white)
 ![x402 v2](https://img.shields.io/badge/x402-v2-blue)
@@ -24,7 +24,7 @@
 
 Solana token data is noisy. Most aggregators report inflated volume and holder counts driven by **wash trading**, and LLMs/agents that rely on them make bad decisions. svm402 is different:
 
-- **Wash trading detection** — organic-token discovery and analysis filtered by on-chain organic scores and pool-vault behavior, not reported volume.
+- **Wash trading detection** — organic-token analysis filtered by on-chain organic scores and pool-vault behavior, not reported volume.
 - **On-chain data accuracy** — holder counts, mint/freeze authority, taxes, and honeypot checks come straight from RPC (Helius), not cached third-party snapshots.
 - **Built for agents** — x402-native payment, machine-readable discovery files (OpenAPI, ARD catalog, llms.txt). Any generic x402 client can discover, pay for, and consume the API with zero human setup and zero vendor-specific install.
 - **Pay per call** — priced in USDC micropayments. No accounts, no keys, no rate-limit tiers.
@@ -49,13 +49,13 @@ Free, no payment header: `GET /demo/check` (preview), `GET /health`, and the met
 
 **Retired (issues #217/#223):** every other route is gone — `/discover`, `/demo/discover`, `/wallet/analyze/{address}`, `/holdcheck`, `/holdcheck/{address}`, `/quote-gate`, `/batch/analyze`, `/analyze`, `/analyze/{address}`, `/safety/{address}`, `/wash-trading/{address}`, `/wash-delta/{address}`, `/organic/{address}`, `/price/{address}`. Each returns **410 `route_retired`** — no charge — with a pointer to `POST /check`, and none appear in any catalog (`.well-known/x402`, `endpoints.json`, `llms.txt`, `openapi.json`, MCP).
 
-**Bought clean isn't staying clean** — tokens can activate cheat mechanics after your purchase (mint authority re-granted, LP pulled). `/holdcheck` re-examines held positions against your entry baseline; `/wash-delta` watches whether authenticity is trending worse using tamper-proof server-side snapshots. Integrity finding only — never a sell recommendation, never price prediction.
+**Bought clean isn't staying clean** — tokens can activate cheat mechanics after your purchase (mint authority re-granted, LP pulled). Re-run `POST /check` on anything you hold whenever it matters — it reads the current on-chain state, not your entry snapshot. Integrity finding only — never a sell recommendation, never price prediction.
 
 ---
 
 ## Risk Score
 
-Every safety response includes a deterministic **risk score from 0 to 10**:
+Every `check` response includes a deterministic **risk score from 0 to 10**:
 
 | Range | Label |
 |-------|-------|
@@ -95,57 +95,17 @@ No accounts. No API keys. The payment *is* the auth.
 
 ## Curl Examples
 
-All paid endpoints return `402` without payment; examples show the happy path.
+`POST /check` returns `402` without payment; the example shows the happy path. The GET twin — `GET /check?mint=<address>` — returns the same verdict at the same $0.03.
 
 ```bash
-# Full token analysis (POST)
-curl -X POST https://svm402.com/analyze \
+# The one paid endpoint — full check ($0.03 USDC)
+curl -X POST https://svm402.com/check \
   -H "Content-Type: application/json" \
   -H "X-Payment: <tx_signature>" \
-  -d '{"address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"}'
+  -d '{"mint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"}'
 
-# Full token analysis (GET)
-curl https://svm402.com/analyze/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
-  -H "X-Payment: <tx_signature>"
-
-# Safety / honeypot check
-curl https://svm402.com/safety/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
-  -H "X-Payment: <tx_signature>"
-
-# Wash trading detection
-curl https://svm402.com/wash-trading/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
-  -H "X-Payment: <tx_signature>"
-
-# Price, liquidity, volume
-curl https://svm402.com/price/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
-  -H "X-Payment: <tx_signature>"
-
-# Organic token discovery
-curl -X POST https://svm402.com/discover \
-  -H "Content-Type: application/json" \
-  -H "X-Payment: <tx_signature>" \
-  -d '{"limit": 10}'
-
-# Wallet analysis
-curl https://svm402.com/wallet/analyze/37fMqbe7vNoDuE15B1qas8TZyhqvYwgLVSViRa4DEmwa \
-  -H "X-Payment: <tx_signature>"
-
-# Held-position integrity (is a token I hold still clean?)
-curl -X POST https://svm402.com/holdcheck \
-  -H "Content-Type: application/json" \
-  -H "X-Payment: <tx_signature>" \
-  -d '{"address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263", "baseline": {"liquidity_usd": 611119}}'
-
-# Organic score standalone (?format=llm adds a one-paragraph briefing)
-curl "https://svm402.com/organic/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263?format=llm" \
-  -H "X-Payment: <tx_signature>"
-
-# Wash-trend delta vs server snapshots
-curl https://svm402.com/wash-delta/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 \
-  -H "X-Payment: <tx_signature>"
-
-# Health check (free)
-curl https://svm402.com/health
+# Free preview — no payment header needed
+curl https://svm402.com/demo/check
 ```
 
 ---
@@ -172,17 +132,7 @@ svm402 is fully self-describing — point any crawler or agent at the root:
 
 👉 **AgentCash (recommended): `npx -y agentcash@latest`, then `agentcash discover https://svm402.com`** — lists every endpoint and live price, then `agentcash fetch <url>` handles payment automatically.
 
-A purpose-built MCP server (9 tools) also exists for bot builders wanting compiled clients with spend guards (max per call, daily cap, payment audit log) — it's what the live sol-trader-agent harness runs. Tools:
-
-- `analyze_token` — full token analysis (bundle)
-- `holdcheck_token` — held-position integrity check
-- `get_organic_score` — organic score standalone
-- `get_wash_delta` — authenticity trend vs server snapshots
-- `discover_tokens` — organic token discovery
-- `check_safety` — honeypot/risk check
-- `check_wash_trading` — wash trading detection
-- `wallet_analyze` — wallet holdings breakdown
-- `get_price` — price & liquidity
+A purpose-built MCP server also exists for bot builders wanting compiled clients with spend guards (max per call, daily cap, payment audit log) — it's what the live sol-trader-agent harness runs. It exposes the surviving `check_*` tool, which fronts the one paid endpoint `POST /check`; the per-route tools were retired/repointed with issue #223.
 
 Payment is handled automatically under the hood via x402.
 
