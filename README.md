@@ -29,8 +29,6 @@ SVM402 is the **Solana x402 conformance and resilience lab** for AI agents: 14 d
 - **A data service.** The lab sells payment behavior, not data.
 - **A key or account requirement:** any generic x402 v2 client works; the payment is the auth.
 
-> **Token analysis (`/check` and related routes) is retired.** Every former analysis surface answers 410 `route_retired` — nothing there is priced or served. What replaced them is the lab; the full guide lives at [/llms.txt](https://svm402.com/llms.txt).
-
 ---
 
 ## Endpoints & pricing — small amounts, integer USDC base units
